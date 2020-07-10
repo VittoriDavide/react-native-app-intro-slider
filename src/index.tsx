@@ -27,8 +27,8 @@ type Props<ItemT> = {
     },
   ) => React.ReactNode;
   renderSkipButton?: () => React.ReactNode;
-  renderNextButton?: () => React.ReactNode;
-  renderDoneButton?: () => React.ReactNode;
+  renderNextButton?: (activeIndex: number) => React.ReactNode;
+  renderDoneButton?: (activeIndex: number) => React.ReactNode;
   renderPrevButton?: () => React.ReactNode;
   onSlideChange?: (a: number, b: number) => void;
   onSkip?: () => void;
@@ -113,9 +113,11 @@ export default class AppIntroSlider<ItemT = any> extends React.Component<
     name: string,
     label: string,
     onPress?: () => void,
-    render?: () => React.ReactNode,
+    render?: (activeIndex: number) => React.ReactNode,
   ) => {
-    const content = render ? render() : this._renderDefaultButton(name, label);
+    const content = render
+      ? render(this.state.activeIndex)
+      : this._renderDefaultButton(name, label);
     return this._renderOuterButton(content, name, onPress);
   };
 
@@ -209,7 +211,7 @@ export default class AppIntroSlider<ItemT = any> extends React.Component<
 
     return (
       <View style={styles.paginationContainer}>
-        <SafeAreaView>
+        <SafeAreaView style={{justifyContent: 'center'}}>
           <View style={styles.paginationDots}>
             {this.props.data.length > 1 &&
               this.props.data.map((_, i) =>
@@ -333,7 +335,7 @@ const styles = StyleSheet.create({
   },
   paginationContainer: {
     position: 'absolute',
-    bottom: 16,
+    bottom: 32,
     left: 16,
     right: 16,
     justifyContent: 'center',
@@ -342,7 +344,7 @@ const styles = StyleSheet.create({
     height: 16,
     margin: 16,
     flexDirection: isAndroidRTL ? 'row-reverse' : 'row',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   dot: {
